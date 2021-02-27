@@ -22,12 +22,21 @@ sudo apt install libasound2-dev pkg-config
 ```
 
 ### License
+
 [ Apache License (Version 2.0).](https://github.com/NicolasSabba/rusty-invades/blob/main/LICENSE)
 
 ### TODO
+
 ⬜ UI.  
 ⬜ Score.  
 ⬜ Lives.  
 ⬜ Multiple levels.  
 ⬜ Power ups.  
-⬜ Better sound.  
+⬜ Better sound.
+
+### Run Linux
+
+1. Download binary.
+2. Extract.
+3. Open directory in terminal.
+4. Run ./rusty-invades
