@@ -3,6 +3,13 @@ name = "rusty-invades"
 version = "0.1.0"
 authors = ["Nicolas <nicolas.sabbatini.95gmail.com>"]
 edition = "2018"
+description = "A 'Space Invader' clone made with rust and made for the terminal."
+homepage = "https://github.com/NicolasSabba/rusty-invades"
+repository = "https://github.com/NicolasSabba/rusty-invades"
+readme = "README.md"
+keywords = ["terminal", "game", "audio", "rusty"]
+categories = ["games", "command-line-utilities", "space-invaders"]
+license = "Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
