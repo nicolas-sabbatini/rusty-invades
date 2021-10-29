@@ -1,7 +1,7 @@
-use rusty_time::timer::Timer;
-use std::time::Duration;
 use crate::frame::{Drawable, Frame};
 use crate::NUM_ROWS;
+use rusty_time::timer::Timer;
+use std::time::Duration;
 
 pub enum Owner {
   Player,
@@ -23,7 +23,7 @@ impl Bullet {
       y,
       alive: true,
       timer: Timer::from_millis(50),
-      owner
+      owner,
     }
   }
 
@@ -45,14 +45,14 @@ impl Bullet {
 
   pub fn ready_to_clear(&self) -> bool {
     match self.owner {
-        Owner::Player =>  (!self.alive && self.timer.ready) || self.y <= 0,
-        Owner::Aliens =>  (!self.alive && self.timer.ready) || self.y >= NUM_ROWS - 1,
+      Owner::Player => (!self.alive && self.timer.ready) || self.y <= 0,
+      Owner::Aliens => (!self.alive && self.timer.ready) || self.y >= NUM_ROWS - 1,
     }
   }
 }
 
 impl Drawable for Bullet {
   fn draw(&self, frame: &mut Frame) {
-      frame[self.x][self.y] = if self.alive { "|" } else { "*" };
+    frame[self.x][self.y] = if self.alive { "|" } else { "*" };
   }
 }

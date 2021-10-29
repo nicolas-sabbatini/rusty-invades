@@ -28,15 +28,14 @@ sudo apt install libasound2-dev pkg-config
 ### TODO
 
 ⬜ UI.  
-⬜ Score.  
-⬜ Lives.  
+✅ Score.  
+✅ Lives.  
 ⬜ Multiple levels.  
 ⬜ Power ups.  
-⬜ Better sound.
+⬜ Make bullets entities.  
 
 ### Run Linux
 
-1. Download binary.
-2. Extract.
-3. Open directory in terminal.
-4. Run ./rusty-invades
+1. Clone repository.
+2. Run "cargo run --release".
+3. Enjoy.

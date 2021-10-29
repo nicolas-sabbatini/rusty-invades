@@ -1,12 +1,12 @@
-use crate::frame::{Drawable, Frame};
-use rusty_time::timer::Timer;
 use crate::bullet::{Bullet, Owner};
+use crate::frame::{Drawable, Frame};
 use crate::{NUM_COLS, NUM_ROWS};
-use std::time::Duration;
-use rusty_audio::Audio;
 use rand::rngs::ThreadRng;
 use rand::Rng;
+use rusty_audio::Audio;
+use rusty_time::timer::Timer;
 use std::cmp::max;
+use std::time::Duration;
 
 // Individual aliens
 pub struct Alien {
@@ -16,10 +16,7 @@ pub struct Alien {
 
 impl Alien {
   pub fn new(x: usize, y: usize) -> Self {
-    Self {
-      x,
-      y,
-    }
+    Self { x, y }
   }
 
   pub fn fire(&self) -> Bullet {
@@ -51,19 +48,35 @@ enum Direction {
 
 impl Army {
   pub fn new(density: ArmyDensity, rows: usize) -> Self {
+    // Create a empty vec of aliens
     let mut aliens = Vec::new();
-    for x in 0..NUM_COLS {
-      for y in 0..NUM_ROWS {
-        if x > 1 && x < NUM_COLS - 2 && y > 0 {
-          match density {
-            ArmyDensity::All => if y <= rows {
+    // We don´t want the aliens touching the borders
+    for x in 2..NUM_COLS - 2 {
+      let mut rows = rows;
+      // Left space for UI
+      for y in 1..NUM_ROWS {
+        // If all the aliens of the row are already in place go to nex row
+        if rows <= 0 {
+          break;
+        }
+        // Else create a new alien
+        match density {
+          ArmyDensity::All => {
+            if rows > 0 {
               aliens.push(Alien::new(x, y));
+              rows -= 1;
             }
-            ArmyDensity::Odd => if (y <= rows * 2) && (y % 2 == 1) && (x % 2 == 1) {
+          }
+          ArmyDensity::Odd => {
+            if (rows > 0) && (y % 2 == 1) && (x % 2 == 1) {
               aliens.push(Alien::new(x, y));
+              rows -= 1;
             }
-            ArmyDensity::Even => if (y <= rows * 2) && (y % 2 == 0) && (x % 2 == 0) {
+          }
+          ArmyDensity::Even => {
+            if (rows > 0) && (y % 2 == 0) && (x % 2 == 0) {
               aliens.push(Alien::new(x, y));
+              rows -= 1;
             }
           }
         }
@@ -101,7 +114,12 @@ impl Army {
           }
         }
         Direction::Right => {
-          let max_x = self.aliens.iter().map(|alien| alien.x).max().unwrap_or(NUM_COLS - 1);
+          let max_x = self
+            .aliens
+            .iter()
+            .map(|alien| alien.x)
+            .max()
+            .unwrap_or(NUM_COLS - 1);
           if max_x >= NUM_COLS - 1 {
             self.direction = Direction::Left;
             down = true;
@@ -154,7 +172,11 @@ impl Army {
   }
 
   pub fn can_kill_alien(&mut self, x: usize, y: usize) -> bool {
-    if let Some(alien_pos) = self.aliens.iter().position(|alien| alien.x == x && alien.y == y) {
+    if let Some(alien_pos) = self
+      .aliens
+      .iter()
+      .position(|alien| alien.x == x && alien.y == y)
+    {
       self.aliens.remove(alien_pos);
       return true;
     };
@@ -162,7 +184,11 @@ impl Army {
   }
 
   pub fn is_colliding_with_bullet(&self, x: usize, y: usize) -> bool {
-    if let Some(_bullet_pos) = self.bullets.iter().position(|bullet| bullet.x == x && bullet.y == y) {
+    if let Some(_bullet_pos) = self
+      .bullets
+      .iter()
+      .position(|bullet| bullet.x == x && bullet.y == y)
+    {
       return true;
     };
     return false;
@@ -173,11 +199,12 @@ impl Drawable for Army {
   fn draw(&self, frame: &mut Frame) {
     // Draw aliens
     for alien in self.aliens.iter() {
-      frame[alien.x][alien.y] = if (self.move_timer.time_left.as_millis() as f64 / self.move_rate as f64) >= 0.5 {
-        "x"
-      } else {
-        "+"
-      }
+      frame[alien.x][alien.y] =
+        if (self.move_timer.time_left.as_millis() as f64 / self.move_rate as f64) >= 0.5 {
+          "x"
+        } else {
+          "+"
+        }
     }
 
     // Draw bullets

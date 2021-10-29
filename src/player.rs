@@ -1,12 +1,12 @@
-use crate::{NUM_ROWS, NUM_COLS};
-use crate::frame::{Drawable, Frame};
+use crate::alien::Army;
 use crate::bullet::{Bullet, Owner};
-use rusty_time::timer::Timer;
-use std::time::Duration;
-use rusty_audio::Audio;
+use crate::frame::{Drawable, Frame};
+use crate::{NUM_COLS, NUM_ROWS};
 use rand::rngs::ThreadRng;
 use rand::Rng;
-use crate::alien::Army;
+use rusty_audio::Audio;
+use rusty_time::timer::Timer;
+use std::time::Duration;
 
 pub struct Player {
   pub x: usize,
@@ -14,6 +14,8 @@ pub struct Player {
   bullets: Vec<Bullet>,
   shot_timer: Timer,
   pub alive: bool,
+  score: u32,
+  lives: u8,
 }
 
 impl Player {
@@ -24,6 +26,8 @@ impl Player {
       bullets: Vec::new(),
       shot_timer: Timer::from_millis(200),
       alive: true,
+      score: 0,
+      lives: 3,
     }
   }
 
@@ -41,14 +45,22 @@ impl Player {
 
   pub fn shot(&mut self, audio: &mut Audio, rng: &mut ThreadRng) {
     if self.shot_timer.ready {
-      self.bullets.push(Bullet::new(self.x, self.y - 1, Owner::Player));
+      self
+        .bullets
+        .push(Bullet::new(self.x, self.y - 1, Owner::Player));
       let random_pew = "pew_".to_owned() + &rng.gen_range(2..=3).to_string();
       audio.play(&random_pew);
       self.shot_timer.reset();
     }
   }
 
-  pub fn update(&mut self, delta: Duration, mut army: &mut Army, mut audio: &mut Audio, mut rng: &mut ThreadRng) {
+  pub fn update(
+    &mut self,
+    delta: Duration,
+    mut army: &mut Army,
+    mut audio: &mut Audio,
+    mut rng: &mut ThreadRng,
+  ) -> u32 {
     self.shot_timer.update(delta);
     for bullet in self.bullets.iter_mut() {
       bullet.update(delta);
@@ -56,6 +68,7 @@ impl Player {
     self.bullets.retain(|bullet| !bullet.ready_to_clear());
 
     self.detect_kills(&mut army, &mut audio, &mut rng);
+    self.score
   }
 
   pub fn can_kill(&self, x: usize, y: usize) -> bool {
@@ -68,6 +81,7 @@ impl Player {
         bullet.explode();
         let random_boom = "boom_".to_owned() + &rng.gen_range(2..=3).to_string();
         audio.play(&random_boom);
+        self.score += 100
       }
     }
   }
